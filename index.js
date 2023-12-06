@@ -8,7 +8,7 @@ let columns = 10;
 let shipLocation = 2;
 let guesses = [];
 
-let allShipLocations = [];
+const allShipLocations = [];
 
 
 function loadScreen() {
@@ -45,10 +45,10 @@ for (let i = 0; i < shipLocation; i++) {
   if (i < shipLocation) {
     const findLocation = strikeLocations[randomShips()];
 
-    // if(!allShipLocations.includes(findLocation)) {
+    if(!allShipLocations.includes(findLocation)) {
     allShipLocations.push(findLocation);
 
-    // }
+    }
   }
 }
 console.log(allShipLocations);
@@ -56,6 +56,7 @@ console.log(allShipLocations);
 function resetGame() {
   console.log();
   shipLocation = 2;
+
   allShipLocations();
   strikeLocations = [];
   startGame();
