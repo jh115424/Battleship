@@ -1,6 +1,6 @@
 let rs = require("readline-sync");
 
-const numbers = [ "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"];
+const numbers = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"];
 const letters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"];
 let grid = [];
 let guesses = [];
@@ -9,142 +9,129 @@ let cords = [];
 // const shipName = ["Carrier", "Battleship", "Submarine", "Destroyer"];
 
 class ship {
-  constructor(name, size, cords) {
+  constructor(name, size, cords, orientation) {
     this.name = name;
     this.size = size;
     this.cords = cords;
+    this.orientation = orientation;
   }
 }
 
 let ships = [];
 
-ships.push(new ship("Carrier", 5, []));
-ships.push(new ship("Battleship", 4, []));
-ships.push(new ship("Submarine", 3, []));
-ships.push(new ship("Destroyer", 2, []));
-ships.push(new ship("Cruiser", 3, []));
+// Instead of Setting the orientation in the buildShips Function, I set it on the ship itself
+ships.push(new ship("Carrier", 5, [], 0));
+ships.push(new ship("Battleship", 4, [], randomNumber(2)));
+ships.push(new ship("Submarine", 3, [], randomNumber(2)));
+ships.push(new ship("Destroyer", 2, [], randomNumber(2)));
+ships.push(new ship("Cruiser", 3, [], randomNumber(2)));
 
 const buildGrid = (sideLength) => {
-  let row;
-  let col = 0;
-  for (row = 0; row < sideLength; row++) {
+  for (let row = 0; row < sideLength; row++) {
     grid[row] = [];
-
-    for (col = 0; col < sideLength; col++) {
+    for (let col = 0; col < sideLength; col++) {
       grid[row][col] = `${letters[row]}${col + 1}`;
-      
     }
   }
   return grid;
 };
-//for line 37
-// grid.push(letters[i] + j);
 
-// puts random numbers
-const shipPlacement = () => Math.floor(Math.random() * grid.length);
-
-//function to get integer
-const gridIndex = (maxLocation) => randomNumber(maxLocation);
-
-//TESTING
 function randomNumber(number) {
   return Math.floor(Math.random() * Math.floor(number));
 }
 
 //checks to see if coordinate is used more than once
-function notUsedMoreThanOnce(cords) {
-    
-     let shipCheck = 
-     (cords.includes("A10") && cords.includes("A1")) || 
-     (cords.includes("B10") && cords.includes("C1")) || 
-     (cords.includes("C10") && cords.includes("D1")) ||
-     (cords.includes("D10") && cords.includes("E1")) ||
-     (cords.includes("E10") && cords.includes("F1")) ||
-     (cords.includes("F10") && cords.includes("G1")) ||
-     (cords.includes("G10") && cords.includes("H1")) ||
-     (cords.includes("H10") && cords.includes("I1")) ||
-     (cords.includes("I10") && cords.includes("J1")) ||
-     (cords.includes("J10") && cords.includes("A1")) ||
-     cords.includes(undefined) 
+function notUsedMoreThanOnce(pCords) {
+  console.log("PCords:", pCords);
+  console.log("Cords:", cords);
+  let wrappingBoard =
+    (pCords.includes("A10") && pCords.includes("B1")) ||
+    (pCords.includes("B10") && pCords.includes("C1")) ||
+    (pCords.includes("C10") && pCords.includes("D1")) ||
+    (pCords.includes("D10") && pCords.includes("E1")) ||
+    (pCords.includes("E10") && pCords.includes("F1")) ||
+    (pCords.includes("F10") && pCords.includes("G1")) ||
+    (pCords.includes("G10") && pCords.includes("H1")) ||
+    (pCords.includes("H10") && pCords.includes("I1")) ||
+    (pCords.includes("I10") && pCords.includes("J1")) ||
+    pCords.includes(undefined);
 
-     //check if coordinates are in the grid
-     let outSideGrid = cords.some((cord) => cord > grid.flat().length);
+  //check if coordinates are in the grid
+  let outSideGrid = cords.some((cord) => cord > grid.flat().length);
 
-//check if other ships does not have same coordinates
-let overlappingShips = cords.some((cord) => ships.includes(`${cord}`));
-return !shipCheck && !outSideGrid && !overlappingShips;
+  //check if other ships does not have same coordinates
+  let overlappingShips = cords.includes(pCords);
 
-//   console.log(shipCheck);
-//       if (shipCheck === false) {
-//         console.log(shipCheck);
-//         return true;
-      
-//       } else {
-//         return false;
-//       }
-       
+  console.log(!wrappingBoard, !outSideGrid, !overlappingShips);
+  return !wrappingBoard && !outSideGrid && !overlappingShips;
+
+  //   console.log(shipCheck);
+  //       if (shipCheck === false) {
+  //         console.log(shipCheck);
+  //         return true;
+
+  //       } else {
+  //         return false;
+  //       }
+}
+const shipPlacements = {
+  placedShips: [],
+  notPlacedShips: [],
 };
 
+/* TODO LIST :
+  1. Make sure each ship can fit in the grid 
+    - if it is to close to an edge , go the other direction
+  2. Check that each ship gets placed correctly ( this is being done in the notUsedMoreThanOnce function just need to apply it each time)
+    - no overlaps 
+    - not off the grid
+    - all ships are placed 
+  3. Log out all the ships and their coordinates - DONE ln 74, and 147,148
+*/
 
 // TODO: CHECK THAT EACH COORDINATE IS NOT USED MORE THAN ONCE.  1ST SHIP CAN TECHNICALLY GO ANYWHERE.  HINT: CHECK SHIP COORDINATES I HAVE ALREADY DONE
 function generateShip(shipSize, shipIndex) {
-   const flatGrid = grid.flat();
-  const startingLocation = randomNumber(flatGrid.length);
-
+  const flatGrid = grid.flat(); // likely to cause issues  [A1,A10,B1,B10]
+  // cause issues, returns a number not the value of the grid coordinate
+  console.log(`Placing ${ships[shipIndex].name}`);
   let placed = false;
-  const whichDirection = randomNumber(2);
+  const whichDirection = ships[shipIndex].orientation; // this is set on the ship object now instead of in the buildShips function
   // ship placement
   while (!placed) {
-    let shipCords = [];
+    let potentialCords = [];
+    let startingLocation = randomNumber(flatGrid.length);
     let cord = startingLocation;
-
-    shipCords.push(flatGrid[cord]);
-  
+    potentialCords.push(flatGrid[cord]);
     for (let i = 0; i < shipSize - 1; i++) {
-
       if (whichDirection === 0) {
-        cord++;
+        ships[shipIndex].size + (startingLocation % 10) < 10 ? cord++ : cord--;
       } else {
-        cord += 10;
+        ships[shipIndex].size + (startingLocation % 10) < 10
+          ? (cord += 10)
+          : (cord -= 10);
       }
-
-      shipCords.push(flatGrid[cord]);
+      console.log(potentialCords);
+      potentialCords.push(flatGrid[cord]);
     }
-
-      //  console.log(notUsedMoreThanOnce(shipCords));
-    if(notUsedMoreThanOnce(shipCords)) {
+    //  console.log(notUsedMoreThanOnce(shipCords));
+    if (notUsedMoreThanOnce(potentialCords)) {
       placed = true;
-       ships[shipIndex].cords.push(...shipCords);
-      cords.push(...shipCords);
-      // placed = true;
-      console.log("ship placed");
-
-    }
-    if (shipSize === ships[shipIndex].cords.length) {
-        placed = true;
-        generateShip(shipSize, shipIndex);
-      }
-
-
-    // } else {
-    //     placed= true;
-    //   generateShip(shipSize, shipIndex);
-    }
-
-    if (shipCords.length === ships.length) {
-    }
-
-    ships[shipIndex].cords.push(...shipCords);
-    cords.push(...shipCords);
-
-    //error handling
-    if (shipSize === ships[shipIndex].cords.length) {
-      placed = true;
+      ships[shipIndex].cords.push(...potentialCords);
+      shipPlacements.placedShips.push({
+        shipName: ships[shipIndex].name,
+        cords: [...potentialCords],
+      });
+      cords.push(...potentialCords);
+    } else {
+      console.log("Try to place ship again");
     }
   }
 
-
-
+  //error handling
+  // if (shipSize === ships[shipIndex].cords.length) {
+  //   placed = true;
+  // }
+}
 
 let gameSetUp = true;
 
@@ -153,13 +140,12 @@ while (gameSetUp) {
   rs.keyIn(" Press any key to start the game. ");
   buildGrid(10);
   console.table(grid);
-//   console.log("Inside of set up while loop");
-
   for (let i = 0; i < ships.length; i++) {
     generateShip(ships[i].size, i);
-    console.log(ships[i].name, ships[i].cords);
   }
+  console.log("Placed ships:", shipPlacements.placedShips);
+  shipPlacements.notPlacedShips.forEach((ship) => {
+    console.log("Not Placed:", ship.shipName, ship.cords);
+  });
   gameSetUp = false;
 }
-
-
