@@ -6,8 +6,6 @@ let grid = [];
 let guesses = [];
 let cords = [];
 
-// const shipName = ["Carrier", "Battleship", "Submarine", "Destroyer"];
-
 class ship {
   constructor(name, size, cords, orientation) {
     this.name = name;
@@ -64,15 +62,6 @@ function notUsedMoreThanOnce(pCords) {
 
   console.log(!wrappingBoard, !outSideGrid, !overlappingShips);
   return !wrappingBoard && !outSideGrid && !overlappingShips;
-
-  //   console.log(shipCheck);
-  //       if (shipCheck === false) {
-  //         console.log(shipCheck);
-  //         return true;
-
-  //       } else {
-  //         return false;
-  //       }
 }
 const shipPlacements = {
   placedShips: [],
