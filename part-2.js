@@ -61,6 +61,8 @@ function notUsedMoreThanOnce(pCords) {
   //check if other ships does not have same coordinates
   let overlappingShips = cords.includes(pCords);
 
+  ships.includes(cords, pCords);
+
   console.log(!wrappingBoard, !outSideGrid, !overlappingShips);
   return !wrappingBoard && !outSideGrid && !overlappingShips;
 }
@@ -68,6 +70,9 @@ const shipPlacements = {
   placedShips: [],
   notPlacedShips: [],
 };
+
+
+
 
 /* TODO LIST :
   1. Make sure each ship can fit in the grid 

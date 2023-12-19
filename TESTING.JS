@@ -6,23 +6,27 @@ let grid = [];
 let guesses = [];
 let cords = [];
 
+
+
 class ship {
   constructor(name, size, cords, orientation) {
     this.name = name;
     this.size = size;
     this.cords = cords;
     this.orientation = orientation;
+    this.cords.length = 0;
+  
   }
 }
 
 let ships = [];
 
 // Instead of Setting the orientation in the buildShips Function, I set it on the ship itself
-ships.push(new ship("Carrier", 5, [], 0));
-ships.push(new ship("Battleship", 4, [], randomNumber(2)));
-ships.push(new ship("Submarine", 3, [], randomNumber(2)));
-ships.push(new ship("Destroyer", 2, [], randomNumber(2)));
-ships.push(new ship("Cruiser", 3, [], randomNumber(2)));
+ships.push(new ship("Carrier", 4, [], 0));
+ships.push(new ship("Battleship", 3, [], randomNumber(2)));
+ships.push(new ship("Submarine", 2, [], randomNumber(2)));
+ships.push(new ship("Destroyer", 1, [], randomNumber(2)));
+ships.push(new ship("Cruiser", 2, [], randomNumber(2)));
 
 const buildGrid = (sideLength) => {
   for (let row = 0; row < sideLength; row++) {
@@ -37,6 +41,7 @@ const buildGrid = (sideLength) => {
 function randomNumber(number) {
   return Math.floor(Math.random() * Math.floor(number));
 }
+
 
 //checks to see if coordinate is used more than once
 function notUsedMoreThanOnce(pCords) {
@@ -54,19 +59,33 @@ function notUsedMoreThanOnce(pCords) {
     (pCords.includes("I10") && pCords.includes("J1")) ||
     pCords.includes(undefined);
 
+  //   if(!wrappingBoard.flat().includes(pCords)){
+  //  cords.push(pCords);
+  //     ships.push(pCords);
+  
+  //   }
+
+
+
   //check if coordinates are in the grid
   let outSideGrid = cords.some((cord) => cord > grid.flat().length);
 
   //check if other ships does not have same coordinates
   let overlappingShips = cords.includes(pCords);
+  
+  ships.includes(cords, pCords);
 
   console.log(!wrappingBoard, !outSideGrid, !overlappingShips);
   return !wrappingBoard && !outSideGrid && !overlappingShips;
+
 }
+
 const shipPlacements = {
   placedShips: [],
   notPlacedShips: [],
+
 };
+
 
 /* TODO LIST :
   1. Make sure each ship can fit in the grid 
@@ -102,7 +121,7 @@ function generateShip(shipSize, shipIndex) {
       console.log(potentialCords);
       potentialCords.push(flatGrid[cord]);
     }
-    //  console.log(notUsedMoreThanOnce(shipCords));
+   
     if (notUsedMoreThanOnce(potentialCords)) {
       placed = true;
       ships[shipIndex].cords.push(...potentialCords);
@@ -115,11 +134,6 @@ function generateShip(shipSize, shipIndex) {
       console.log("Try to place ship again");
     }
   }
-
-  //error handling
-  // if (shipSize === ships[shipIndex].cords.length) {
-  //   placed = true;
-  // }
 }
 
 let gameSetUp = true;
@@ -138,3 +152,4 @@ while (gameSetUp) {
   });
   gameSetUp = false;
 }
+
