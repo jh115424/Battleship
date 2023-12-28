@@ -10,44 +10,26 @@ let guesses = [];
 
 const allShipLocations = [];
 
-
 function loadScreen() {
-    console.log("Starting game.......");
-  }
-  loadScreen();
+  console.log("Starting game.......");
+}
+loadScreen();
 
 const startGame = () => {
   rs.keyIn(" Press any key to start the game. ");
-
-  // createGrid(3);
-  // generateShips();
 };
 startGame();
 
-// creates 2 random ships on board
+// ⁡⁢⁣⁢creates 2 random ships on a board⁡
 const randomShips = () => Math.floor(Math.random() * strikeLocations.length);
 console.log(allShipLocations);
-
-// function generateShips() {
-//     if(shipLocation < 2) {
-//         const findLocation = strikeLocations[randomShips()]
-
-//         if(allShipLocations.includes(findLocation)) {
-//             generateShips();
-//         } else {
-//             allShipLocations.push(findLocation);
-//         }
-//     }
-// }
-// generateShips();
 
 for (let i = 0; i < shipLocation; i++) {
   if (i < shipLocation) {
     const findLocation = strikeLocations[randomShips()];
 
-    if(!allShipLocations.includes(findLocation)) {
-    allShipLocations.push(findLocation);
-
+    if (!allShipLocations.includes(findLocation)) {
+      allShipLocations.push(findLocation);
     }
   }
 }
@@ -56,14 +38,14 @@ console.log(allShipLocations);
 function resetGame() {
   console.log();
   shipLocation = 2;
-
+  resetGame();
   allShipLocations();
   strikeLocations = [];
   startGame();
   loadScreen();
 }
 
-// Keeps track of strikes
+// ⁡⁢⁣⁢Keeps track of strikes⁡
 function playerStrike() {
   if (shipLocation === 0) {
     shipLocation = shipLocation;
@@ -109,4 +91,3 @@ function checkShipHit(location) {
     playerStrike();
   }
 }
-

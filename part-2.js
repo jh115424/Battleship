@@ -5,7 +5,8 @@ const letters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"];
 let grid = [];
 let guesses = [];
 let cords = [];
-
+let orientation = [];
+let shipLocation = 5;
 
 class ship {
   constructor(name, size, cords, orientation) {
@@ -71,29 +72,17 @@ const shipPlacements = {
   notPlacedShips: [],
 };
 
-
-
-
-/* TODO LIST :
-  1. Make sure each ship can fit in the grid 
-    - if it is to close to an edge , go the other direction
-  2. Check that each ship gets placed correctly ( this is being done in the notUsedMoreThanOnce function just need to apply it each time)
-    - no overlaps 
-    - not off the grid
-    - all ships are placed 
-  3. Log out all the ships and their coordinates - DONE ln 74, and 147,148
-*/
-
-// TODO: CHECK THAT EACH COORDINATE IS NOT USED MORE THAN ONCE.  1ST SHIP CAN TECHNICALLY GO ANYWHERE.  HINT: CHECK SHIP COORDINATES I HAVE ALREADY DONE
 function generateShip(shipSize, shipIndex) {
-  const flatGrid = grid.flat(); // likely to cause issues  [A1,A10,B1,B10]
-  // cause issues, returns a number not the value of the grid coordinate
+  const flatGrid = grid.flat();
+
   console.log(`Placing ${ships[shipIndex].name}`);
   let placed = false;
-  const whichDirection = ships[shipIndex].orientation; // this is set on the ship object now instead of in the buildShips function
+  const whichDirection = ships[shipIndex].orientation;
+
   // ship placement
   while (!placed) {
     let potentialCords = [];
+
     let startingLocation = randomNumber(flatGrid.length);
     let cord = startingLocation;
     potentialCords.push(flatGrid[cord]);
@@ -108,21 +97,19 @@ function generateShip(shipSize, shipIndex) {
       console.log(potentialCords);
       potentialCords.push(flatGrid[cord]);
     }
-   
+
     if (notUsedMoreThanOnce(potentialCords)) {
       placed = true;
       ships[shipIndex].cords.push(...potentialCords);
+
       shipPlacements.placedShips.push({
         shipName: ships[shipIndex].name,
         cords: [...potentialCords],
       });
       cords.push(...potentialCords);
-    } else {
-      console.log("Try to place ship again");
     }
   }
 }
-
 let gameSetUp = true;
 
 // This is the game loop
@@ -133,6 +120,7 @@ while (gameSetUp) {
   for (let i = 0; i < ships.length; i++) {
     generateShip(ships[i].size, i);
   }
+
   console.log("Placed ships:", shipPlacements.placedShips);
   shipPlacements.notPlacedShips.forEach((ship) => {
     console.log("Not Placed:", ship.shipName, ship.cords);
@@ -140,3 +128,107 @@ while (gameSetUp) {
   gameSetUp = false;
 }
 
+// ⁡⁢⁣⁢CODE TO ACTUALLY PLAY GAME BELOW⁡
+
+// LOADING SCREEN
+const loadScreen = () => {
+  console.log("Starting game.......");
+};
+loadScreen();
+
+// STARTS THE GAME
+const strike = () => {
+  let strike = rs.question("Press any key to continue: ");
+  strike = strike.toUpperCase();
+  let cord = strike.charCodeAt(0) - 65;
+  if (strike.length > 2) {
+    cord = strike.charCodeAt(1) - 49;
+  }
+  console.log(cord);
+  console.log(cords);
+  return cord;
+};
+strike();
+
+const potentialCords = () => {
+  let potentialCords = [];
+  let randomX = Math.floor(Math.random() * 10);
+  let randomY = Math.floor(Math.random() * 10);
+  let randomDirection = Math.floor(Math.random() * 2);
+
+  if (randomDirection === 0) {
+    for (let i = 0; i < 5; i++) {
+      if (randomX + i < 10) {
+        potentialCords.push(grid[randomX + i][randomY]);
+      } else {
+        potentialCords.push(grid[randomX - i][randomY]);
+      }
+    }
+  }
+  return potentialCords;
+};
+console.log(potentialCords());
+
+function resetGame() {
+  loadScreen();
+  strike();
+  console.log();
+  shipLocation = 5;
+  playerStrike();
+  resetGame();
+}
+
+function playerStrike() {
+  if (shipLocation === 0) {
+    shipLocation = shipLocation;
+    let answer = rs.keyIn(
+      "You have destroyed all of the battleships!  Would you like to play again? Y/N"
+    );
+    answer = answer.toUpperCase();
+
+    console.log();
+    console.log("The locations of the ships were: ");
+    console.log(shipPlacements.placedShips);
+    console.log("The locations of the misses were: ");
+    console.log(guesses);
+
+    if (answer === "Y") {
+      resetGame();
+    } else if (answer === "N") {
+      console.log("Goodbye! ");
+      process.exit();
+    }
+  }
+  let strike = rs.question("Enter a location to strike: ");
+  strike = strike.toUpperCase();
+
+  if (shipLocation < 0) {
+    checkShipHit(strike);
+  } else if (shipLocation > 0) {
+    checkShipHit(strike);
+  }
+}
+playerStrike();
+
+function checkShipHit(location) {
+  console.log(location);
+  console.log(guesses);
+
+  if (guesses.includes(location)) {
+    console.log("You have already picked this location!  Miss!");
+    console.log(location);
+    playerStrike();
+  }
+  if (!guesses.includes(location)) {
+    shipLocation = shipLocation - 1;
+    console.log(
+      `You have sunken a ship!  You have ${shipLocation} ships left! `
+    );
+    guesses.push(location);
+    playerStrike();
+  } else if (guesses.includes(location)) {
+    console.log("You have missed!");
+    guesses.push(location);
+    playerStrike();
+  }
+}

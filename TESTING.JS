@@ -7,26 +7,23 @@ let guesses = [];
 let cords = [];
 
 
-
 class ship {
   constructor(name, size, cords, orientation) {
     this.name = name;
     this.size = size;
     this.cords = cords;
     this.orientation = orientation;
-    this.cords.length = 0;
-  
   }
 }
 
 let ships = [];
 
 // Instead of Setting the orientation in the buildShips Function, I set it on the ship itself
-ships.push(new ship("Carrier", 4, [], 0));
-ships.push(new ship("Battleship", 3, [], randomNumber(2)));
-ships.push(new ship("Submarine", 2, [], randomNumber(2)));
-ships.push(new ship("Destroyer", 1, [], randomNumber(2)));
-ships.push(new ship("Cruiser", 2, [], randomNumber(2)));
+ships.push(new ship("Carrier", 5, [], 0));
+ships.push(new ship("Battleship", 4, [], randomNumber(2)));
+ships.push(new ship("Submarine", 3, [], randomNumber(2)));
+ships.push(new ship("Destroyer", 2, [], randomNumber(2)));
+ships.push(new ship("Cruiser", 3, [], randomNumber(2)));
 
 const buildGrid = (sideLength) => {
   for (let row = 0; row < sideLength; row++) {
@@ -41,7 +38,6 @@ const buildGrid = (sideLength) => {
 function randomNumber(number) {
   return Math.floor(Math.random() * Math.floor(number));
 }
-
 
 //checks to see if coordinate is used more than once
 function notUsedMoreThanOnce(pCords) {
@@ -59,45 +55,24 @@ function notUsedMoreThanOnce(pCords) {
     (pCords.includes("I10") && pCords.includes("J1")) ||
     pCords.includes(undefined);
 
-  //   if(!wrappingBoard.flat().includes(pCords)){
-  //  cords.push(pCords);
-  //     ships.push(pCords);
-  
-  //   }
-
-
-
   //check if coordinates are in the grid
   let outSideGrid = cords.some((cord) => cord > grid.flat().length);
 
   //check if other ships does not have same coordinates
   let overlappingShips = cords.includes(pCords);
-  
+
   ships.includes(cords, pCords);
 
   console.log(!wrappingBoard, !outSideGrid, !overlappingShips);
   return !wrappingBoard && !outSideGrid && !overlappingShips;
-
 }
-
 const shipPlacements = {
   placedShips: [],
   notPlacedShips: [],
-
 };
 
 
-/* TODO LIST :
-  1. Make sure each ship can fit in the grid 
-    - if it is to close to an edge , go the other direction
-  2. Check that each ship gets placed correctly ( this is being done in the notUsedMoreThanOnce function just need to apply it each time)
-    - no overlaps 
-    - not off the grid
-    - all ships are placed 
-  3. Log out all the ships and their coordinates - DONE ln 74, and 147,148
-*/
 
-// TODO: CHECK THAT EACH COORDINATE IS NOT USED MORE THAN ONCE.  1ST SHIP CAN TECHNICALLY GO ANYWHERE.  HINT: CHECK SHIP COORDINATES I HAVE ALREADY DONE
 function generateShip(shipSize, shipIndex) {
   const flatGrid = grid.flat(); // likely to cause issues  [A1,A10,B1,B10]
   // cause issues, returns a number not the value of the grid coordinate
@@ -136,6 +111,17 @@ function generateShip(shipSize, shipIndex) {
   }
 }
 
+function undefined() {
+  if(shipPlacements.placedShips.length === 5){
+    return "All Ships Placed"
+  } else if (shipPlacements.placedShips.length === 0) {
+    return "No Ships Placed"
+  }
+  console.log("Ship Name:", shipPlacements.placedShips[shipPlacements.placedShips.length - 1].ship)
+}
+
+
+
 let gameSetUp = true;
 
 // This is the game loop
@@ -146,10 +132,63 @@ while (gameSetUp) {
   for (let i = 0; i < ships.length; i++) {
     generateShip(ships[i].size, i);
   }
+
+
   console.log("Placed ships:", shipPlacements.placedShips);
   shipPlacements.notPlacedShips.forEach((ship) => {
     console.log("Not Placed:", ship.shipName, ship.cords);
   });
   gameSetUp = false;
+
+
 }
+
+
+
+
+
+// function shipName() {
+//   if(shipPlacements.placedShips.length === 5){
+//     return "All Ships Placed"
+//   } else if(shipPlacements.placedShips.length === 0) {
+//     return "No Ships Placed"
+//   }
+//   console.log("Ship Name:", shipPlacements.placedShips[shipPlacements.placedShips.length - 1].shipName)
+
+// }
+
+
+function playerStrike( player) {
+  let strike = false;
+  let cords = [];
+  let strikeAnswer = 0;
+  let shipName = 
+    shipPlacements.placedShips[shipPlacements.placedShips.length - 1].shipName;
+  let shipIndex = shipPlacements.placedShips.length - 1;
+
+  while (!strike) {
+    
+    strikeAnswer = rs.keyIn
+      "Where would you like to strike?  ",
+      { limit: "alpha", limit: "num", limit: 2 }
+  let strike = rs.question("Where would you like to strike? ");
+    cords = [];
+    if(strikeAnswer === cords ) {
+      console.log("You already selected that location");
+      strike = false;
+    } else if (strikeAnswer === "q") {
+      console.log("You quit the game");
+      strike = false;
+    }
+  // strike = parseInt(strike);
+  // console.log(strike);
+
+  }
+}
+playerStrike();
+
+ 
+
+ 
+
 
